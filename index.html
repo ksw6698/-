@@ -36,30 +36,30 @@
     <div class="bg-white p-6 md:p-10 rounded-2xl shadow-2xl max-w-4xl w-full">
         
         <header class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">정수기 위생관리 기록</h1>
-            <p class="text-gray-500 mt-2">각 항목별 관리 방법을 확인하고 사진을 촬영하여 기록을 남겨주세요.</p>
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">정수기 관리 기록</h1>
+            <p class="text-gray-500 mt-2">관리가 필요한 부위를 확인하고, 사진으로 기록해보세요.</p>
         </header>
 
         <div id="guide-section">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- 항목 1: 코크 -->
+                <!-- 항목 1: 추출구 -->
                 <div class="border border-gray-200 rounded-lg p-5 text-center transition-transform transform hover:scale-105 hover:shadow-lg">
-                    <img src="https://placehold.co/400x300/E2E8F0/4A5568?text=코크+청소" alt="코크 위생관리" class="w-full h-40 object-cover rounded-md mb-4">
-                    <h3 class="text-xl font-semibold text-gray-700">코크 위생 관리</h3>
+                    <img src="https://placehold.co/400x300/E2E8F0/4A5568?text=코크+청소" alt="추출구 관리방법" class="w-full h-40 object-cover rounded-md mb-4">
+                    <h3 class="text-xl font-semibold text-gray-700">추출구 관리방법</h3>
                     <p class="text-gray-500 text-sm mt-2 mb-4">면봉이나 부드러운 천으로 코크 주변의 물때를 깨끗하게 닦아냅니다.</p>
                     <button data-step="코크" class="take-photo-btn w-full bg-blue-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-600 transition-colors">사진 촬영하기</button>
                 </div>
                 <!-- 항목 2: 물받이 -->
                 <div class="border border-gray-200 rounded-lg p-5 text-center transition-transform transform hover:scale-105 hover:shadow-lg">
-                    <img src="https://placehold.co/400x300/E2E8F0/4A5568?text=물받이+세척" alt="물받이 위생관리" class="w-full h-40 object-cover rounded-md mb-4">
-                    <h3 class="text-xl font-semibold text-gray-700">물받이 위생 관리</h3>
+                    <img src="https://placehold.co/400x300/E2E8F0/4A5568?text=물받이+세척" alt="물받이 관리방법" class="w-full h-40 object-cover rounded-md mb-4">
+                    <h3 class="text-xl font-semibold text-gray-700">물받이 관리방법</h3>
                     <p class="text-gray-500 text-sm mt-2 mb-4">물받이를 분리하여 중성세제로 세척한 후, 완전히 건조시켜 장착합니다.</p>
                     <button data-step="물받이" class="take-photo-btn w-full bg-blue-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-600 transition-colors">사진 촬영하기</button>
                 </div>
                 <!-- 항목 3: 외관 -->
                 <div class="border border-gray-200 rounded-lg p-5 text-center transition-transform transform hover:scale-105 hover:shadow-lg">
-                    <img src="https://placehold.co/400x300/E2E8F0/4A5568?text=외관+청결" alt="외관 위생관리" class="w-full h-40 object-cover rounded-md mb-4">
-                    <h3 class="text-xl font-semibold text-gray-700">제품 외관 관리</h3>
+                    <img src="https://placehold.co/400x300/E2E8F0/4A5568?text=외관+청결" alt="제품 외관 관리방법" class="w-full h-40 object-cover rounded-md mb-4">
+                    <h3 class="text-xl font-semibold text-gray-700">제품 외관 관리방법</h3>
                     <p class="text-gray-500 text-sm mt-2 mb-4">부드러운 행주로 제품 외관에 묻은 먼지나 얼룩을 깨끗이 닦습니다.</p>
                     <button data-step="외관" class="take-photo-btn w-full bg-blue-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-600 transition-colors">사진 촬영하기</button>
                 </div>
@@ -79,8 +79,8 @@
             <img id="preview-img" class="rounded-lg shadow-xl max-w-3xl max-h-[70vh] w-auto">
             <p id="preview-step-name" class="text-white text-2xl font-bold my-4"></p>
             <div class="mt-4 flex space-x-4">
-                <button id="upload-btn" class="bg-purple-600 text-white py-3 px-6 rounded-full font-bold text-lg hover:bg-purple-700 transition-colors">Google Sheet로 전송</button>
-                <button id="retake-btn" class="bg-yellow-500 text-white py-3 px-6 rounded-full font-bold text-lg hover:bg-yellow-600 transition-colors">다시 찍기</button>
+                <button id="upload-btn" class="bg-purple-600 text-white py-3 px-6 rounded-full font-bold text-lg hover:bg-purple-700 transition-colors">완료</button>
+                <button id="retake-btn" class="bg-yellow-500 text-white py-3 px-6 rounded-full font-bold text-lg hover:bg-yellow-600 transition-colors">다시촬영</button>
             </div>
         </div>
 
