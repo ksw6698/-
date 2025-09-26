@@ -92,7 +92,7 @@
         // ===============================================================
         // 중요: Google Apps Script 배포 후 생성된 URL을 여기에 붙여넣으세요.
         // ===============================================================
-        const GOOGLE_APPS_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE'; 
+        const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/a/macros/coway.com/s/AKfycbwgyPVgRazqhlABjnM4DvmBEID_ZaFKZRrGOs0Bwh2sOPv1RXgb1GqI8qOpDwNsv0pxZw/exec'; 
 
         // DOM 요소 가져오기
         const guideSection = document.getElementById('guide-section');
