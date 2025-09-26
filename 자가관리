@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>정수기 위생관리 기록 시스템</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* 로딩 스피너 애니메이션 */
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-white p-6 md:p-10 rounded-2xl shadow-2xl max-w-4xl w-full">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">정수기 위생관리 기록</h1>
+            <p class="text-gray-500 mt-2">각 항목별 관리 방법을 확인하고 사진을 촬영하여 기록을 남겨주세요.</p>
+        </header>
+
+        <!-- 위생관리 가이드 섹션 -->
+        <div id="guide-section">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- 항목 1: 코크 -->
+                <div class="border border-gray-200 rounded-lg p-5 text-center transition-transform transform hover:scale-105 hover:shadow-lg">
+                    <img src="https://placehold.co/400x300/E2E8F0/4A5568?text=코크+청소" alt="코크 위생관리" class="w-full h-40 object-cover rounded-md mb-4">
+                    <h3 class="text-xl font-semibold text-gray-700">코크 위생 관리</h3>
+                    <p class="text-gray-500 text-sm mt-2 mb-4">면봉이나 부드러운 천으로 코크 주변의 물때를 깨끗하게 닦아냅니다.</p>
+                    <button data-step="코크" class="take-photo-btn w-full bg-blue-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-600 transition-colors">사진 촬영하기</button>
+                </div>
+                <!-- 항목 2: 물받이 -->
+                <div class="border border-gray-200 rounded-lg p-5 text-center transition-transform transform hover:scale-105 hover:shadow-lg">
+                    <img src="https://placehold.co/400x300/E2E8F0/4A5568?text=물받이+세척" alt="물받이 위생관리" class="w-full h-40 object-cover rounded-md mb-4">
+                    <h3 class="text-xl font-semibold text-gray-700">물받이 위생 관리</h3>
+                    <p class="text-gray-500 text-sm mt-2 mb-4">물받이를 분리하여 중성세제로 세척한 후, 완전히 건조시켜 장착합니다.</p>
+                    <button data-step="물받이" class="take-photo-btn w-full bg-blue-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-600 transition-colors">사진 촬영하기</button>
+                </div>
+                <!-- 항목 3: 외관 -->
+                <div class="border border-gray-200 rounded-lg p-5 text-center transition-transform transform hover:scale-105 hover:shadow-lg">
+                    <img src="https://placehold.co/400x300/E2E8F0/4A5568?text=외관+청결" alt="외관 위생관리" class="w-full h-40 object-cover rounded-md mb-4">
+                    <h3 class="text-xl font-semibold text-gray-700">제품 외관 관리</h3>
+                    <p class="text-gray-500 text-sm mt-2 mb-4">부드러운 행주로 제품 외관에 묻은 먼지나 얼룩을 깨끗이 닦습니다.</p>
+                    <button data-step="외관" class="take-photo-btn w-full bg-blue-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-600 transition-colors">사진 촬영하기</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 카메라 및 미리보기 섹션 (초기에는 숨김) -->
+        <div id="camera-section" class="hidden fixed inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center z-50 p-4">
+            <video id="video" class="rounded-lg shadow-xl w-full max-w-3xl" autoplay playsinline></video>
+            <canvas id="canvas" class="hidden"></canvas>
+            <div class="mt-4 flex space-x-4">
+                <button id="capture-btn" class="bg-green-500 text-white py-3 px-6 rounded-full font-bold text-lg hover:bg-green-600 transition-colors">촬영</button>
+                <button id="cancel-camera-btn" class="bg-gray-500 text-white py-3 px-6 rounded-full font-bold text-lg hover:bg-gray-600 transition-colors">취소</button>
+            </div>
+        </div>
+
+        <div id="preview-section" class="hidden fixed inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center z-50 p-4">
+            <img id="preview-img" class="rounded-lg shadow-xl max-w-3xl max-h-[70vh] w-auto">
+            <p id="preview-step-name" class="text-white text-2xl font-bold my-4"></p>
+            <div class="mt-4 flex space-x-4">
+                <button id="upload-btn" class="bg-purple-600 text-white py-3 px-6 rounded-full font-bold text-lg hover:bg-purple-700 transition-colors">Google Sheet로 전송</button>
+                <button id="retake-btn" class="bg-yellow-500 text-white py-3 px-6 rounded-full font-bold text-lg hover:bg-yellow-600 transition-colors">다시 찍기</button>
+            </div>
+        </div>
+
+        <!-- 로딩 및 상태 메시지 섹션 -->
+        <div id="status-section" class="hidden fixed inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center z-50">
+            <div id="loader" class="loader"></div>
+            <p id="status-message" class="text-white text-xl mt-4"></p>
+        </div>
+
+    </div>
+
+    <script>
+        // ===============================================================
+        // 중요: Google Apps Script 배포 후 생성된 URL을 여기에 붙여넣으세요.
+        // ===============================================================
+        const GOOGLE_APPS_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE'; 
+
+        // DOM 요소 가져오기
+        const guideSection = document.getElementById('guide-section');
+        const cameraSection = document.getElementById('camera-section');
+        const previewSection = document.getElementById('preview-section');
+        const statusSection = document.getElementById('status-section');
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureBtn = document.getElementById('capture-btn');
+        const cancelCameraBtn = document.getElementById('cancel-camera-btn');
+        const previewImg = document.getElementById('preview-img');
+        const previewStepName = document.getElementById('preview-step-name');
+        const uploadBtn = document.getElementById('upload-btn');
+        const retakeBtn = document.getElementById('retake-btn');
+        const loader = document.getElementById('loader');
+        const statusMessage = document.getElementById('status-message');
+
+        let currentStream;
+        let currentStep = '';
+
+        // "사진 촬영하기" 버튼 클릭 이벤트 (이벤트 위임 사용)
+        guideSection.addEventListener('click', (e) => {
+            if (e.target.classList.contains('take-photo-btn')) {
+                currentStep = e.target.dataset.step;
+                openCamera();
+            }
+        });
+        
+        // 카메라 열기
+        async function openCamera() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { facingMode: 'environment' } // 후면 카메라 우선 사용
+                    });
+                    video.srcObject = stream;
+                    currentStream = stream;
+                    cameraSection.classList.remove('hidden');
+                } catch (error) {
+                    console.error('카메라 접근 오류:', error);
+                    alert('카메라에 접근할 수 없습니다. 권한을 확인해주세요.');
+                }
+            } else {
+                alert('이 브라우저에서는 카메라 기능을 지원하지 않습니다.');
+            }
+        }
+
+        // 카메라 닫기
+        function closeCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
+            cameraSection.classList.add('hidden');
+        }
+
+        // 사진 촬영
+        captureBtn.addEventListener('click', () => {
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+            previewImg.src = dataUrl;
+            previewStepName.textContent = `[${currentStep}] 항목 촬영 완료`;
+            
+            closeCamera();
+            previewSection.classList.remove('hidden');
+        });
+
+        // 카메라 취소
+        cancelCameraBtn.addEventListener('click', closeCamera);
+
+        // 다시 찍기
+        retakeBtn.addEventListener('click', () => {
+            previewSection.classList.add('hidden');
+            openCamera();
+        });
+
+        // 상태 메시지 표시
+        function showStatus(message, showLoader = true) {
+            statusMessage.textContent = message;
+            loader.style.display = showLoader ? 'block' : 'none';
+            statusSection.classList.remove('hidden');
+        }
+
+        // 상태 메시지 숨기기
+        function hideStatus() {
+            statusSection.classList.add('hidden');
+        }
+
+        // Google Sheet로 전송
+        uploadBtn.addEventListener('click', async () => {
+            if (GOOGLE_APPS_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+                alert('index.html 파일에서 GOOGLE_APPS_SCRIPT_URL 변수를 설정해야 합니다.');
+                return;
+            }
+
+            showStatus('Google Sheet로 전송 중...');
+
+            // Base64 데이터에서 헤더 부분 제거
+            const base64ImageData = previewImg.src.split(',')[1];
+            
+            const payload = {
+                step: currentStep,
+                imageData: base64ImageData,
+                timestamp: new Date().toLocaleString('ko-KR')
+            };
+
+            try {
+                const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Google Apps Script Web App은 no-cors 모드로 호출해야 할 수 있습니다.
+                    cache: 'no-cache',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                // no-cors 모드에서는 응답을 직접 읽을 수 없으므로 성공으로 간주
+                showStatus('전송 완료!', false);
+                setTimeout(() => {
+                    hideStatus();
+                    previewSection.classList.add('hidden');
+                }, 2000);
+
+            } catch (error) {
+                console.error('전송 오류:', error);
+                showStatus('오류 발생: 전송에 실패했습니다.', false);
+                 setTimeout(hideStatus, 3000);
+            }
+        });
+
+    </script>
+</body>
+</html>
