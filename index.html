@@ -10,7 +10,6 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        /* 로딩 스피너 애니메이션 */
         .loader {
             border: 5px solid #f3f3f3;
             border-top: 5px solid #3498db;
@@ -23,37 +22,21 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        /* alert() 대신 사용할 커스텀 모달 스타일 */
         .custom-alert {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background-color: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             z-index: 100;
         }
         .custom-alert-content {
-            background-color: white;
-            padding: 30px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            max-width: 90%;
-            width: 350px;
+            background-color: white; padding: 30px; border-radius: 12px;
+            text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            max-width: 90%; width: 350px;
         }
         .custom-alert-btn {
-            margin-top: 20px;
-            padding: 10px 25px;
-            border: none;
-            background-color: #3498db;
-            color: white;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
+            margin-top: 20px; padding: 10px 25px; border: none;
+            background-color: #3498db; color: white; border-radius: 8px;
+            cursor: pointer; font-weight: 500;
         }
     </style>
 </head>
@@ -134,7 +117,7 @@
         // ===============================================================
         const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/a/macros/coway.com/s/AKfycby0MZnsWlDu8vhIOHNPC0-zMbF5Qbwzx-YhyDX2RMPLyC-Nh65I5PGso1wtlTv-rE8OtA/exec'; 
 
-        // DOM 요소 가져오기
+        // DOM 요소들
         const guideSection = document.getElementById('guide-section');
         const cameraSection = document.getElementById('camera-section');
         const previewSection = document.getElementById('preview-section');
@@ -156,16 +139,12 @@
         let currentStream;
         let currentStep = '';
         
-        // 커스텀 alert 함수
         function showAlert(message) {
             customAlertMessage.textContent = message;
             customAlert.classList.remove('hidden');
         }
-        customAlertBtn.addEventListener('click', () => {
-            customAlert.classList.add('hidden');
-        });
+        customAlertBtn.addEventListener('click', () => customAlert.classList.add('hidden'));
 
-        // "사진 촬영하기" 버튼 클릭 이벤트 (이벤트 위임 사용)
         guideSection.addEventListener('click', (e) => {
             if (e.target.classList.contains('take-photo-btn')) {
                 currentStep = e.target.dataset.step;
@@ -173,26 +152,21 @@
             }
         });
         
-        // 카메라 열기
         async function openCamera() {
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ 
-                        video: { facingMode: 'environment' } // 후면 카메라 우선 사용
-                    });
-                    video.srcObject = stream;
-                    currentStream = stream;
-                    cameraSection.classList.remove('hidden');
-                } catch (error) {
-                    console.error('카메라 접근 오류:', error);
-                    showAlert('카메라에 접근할 수 없습니다. 브라우저의 카메라 권한을 확인해주세요.');
-                }
-            } else {
-                showAlert('이 브라우저에서는 카메라 기능을 지원하지 않습니다.');
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                return showAlert('이 브라우저에서는 카메라 기능을 지원하지 않습니다.');
+            }
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                video.srcObject = stream;
+                currentStream = stream;
+                cameraSection.classList.remove('hidden');
+            } catch (error) {
+                console.error('카메라 접근 오류:', error);
+                showAlert('카메라에 접근할 수 없습니다. 브라우저의 카메라 권한을 확인해주세요.');
             }
         }
 
-        // 카메라 닫기
         function closeCamera() {
             if (currentStream) {
                 currentStream.getTracks().forEach(track => track.stop());
@@ -200,50 +174,40 @@
             cameraSection.classList.add('hidden');
         }
 
-        // 사진 촬영
         captureBtn.addEventListener('click', () => {
             const context = canvas.getContext('2d');
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-            previewImg.src = dataUrl;
+            previewImg.src = canvas.toDataURL('image/jpeg', 0.9);
             previewStepName.textContent = `[${currentStep}] 항목 촬영 완료`;
-            
             closeCamera();
             previewSection.classList.remove('hidden');
         });
 
-        // 카메라 취소
         cancelCameraBtn.addEventListener('click', closeCamera);
-
-        // 다시 찍기
         retakeBtn.addEventListener('click', () => {
             previewSection.classList.add('hidden');
             openCamera();
         });
 
-        // 상태 메시지 표시
         function showStatus(message, showLoader = true) {
             statusMessage.textContent = message;
             loader.style.display = showLoader ? 'block' : 'none';
             statusSection.classList.remove('hidden');
         }
 
-        // 상태 메시지 숨기기
         function hideStatus() {
             statusSection.classList.add('hidden');
         }
 
-        // Google Sheet로 전송
+        // ===============================================================
+        // ★★ Google Sheet로 전송 (최종 수정된 버전) ★★
+        // ===============================================================
         uploadBtn.addEventListener('click', async () => {
-            // === 문제가 되었던 if 블록을 여기서 삭제했습니다! ===
-            
             showStatus('Google Sheet로 전송 중...');
 
             const base64ImageData = previewImg.src.split(',')[1];
-            
             const payload = {
                 step: currentStep,
                 imageData: base64ImageData,
@@ -253,33 +217,36 @@
             try {
                 const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
                     method: 'POST',
-                    // mode: 'no-cors'를 사용하면 실제 성공/실패 여부를 알 수 없으므로 삭제합니다.
-                    // Google Apps Script에서 CORS를 처리하도록 수정해야 합니다. (별도 안내)
-                    // 지금은 우선 작동을 위해 cors 모드로 테스트합니다.
-                    cache: 'no-cache',
-                    headers: {
-                        // 'Content-Type': 'application/json' // 이 부분을 수정했습니다.
-                        'Content-Type': 'text/plain;charset=utf-8',
-                    },
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify(payload),
                     redirect: 'follow'
                 });
-                
-                showStatus('전송 완료!', false);
-                setTimeout(() => {
-                    hideStatus();
-                    previewSection.classList.add('hidden');
-                }, 2000);
+
+                // 서버로부터 받은 응답을 JSON 형태로 읽어옵니다.
+                const result = await response.json();
+
+                // 응답 내용에 따라 성공/실패를 처리합니다.
+                if (result.status === 'success') {
+                    showStatus('전송 완료!', false);
+                    setTimeout(() => {
+                        hideStatus();
+                        previewSection.classList.add('hidden');
+                    }, 2000);
+                } else {
+                    // 서버가 보낸 '진짜' 에러 메시지를 보여줍니다.
+                    console.error('서버 오류:', result.message);
+                    showStatus(`오류: ${result.message}`, false);
+                    setTimeout(hideStatus, 5000); // 에러 메시지는 5초간 표시
+                }
 
             } catch (error) {
+                // 네트워크 오류 등 fetch 자체가 실패한 경우
                 console.error('전송 오류:', error);
-                showStatus('오류 발생: 전송에 실패했습니다.', false);
-                 setTimeout(hideStatus, 3000);
+                showStatus('오류 발생: 전송에 실패했습니다. (네트워크 확인)', false);
+                setTimeout(hideStatus, 3000);
             }
         });
-
     </script>
 </body>
 </html>
-
 
