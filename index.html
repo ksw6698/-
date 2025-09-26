@@ -23,6 +23,38 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        /* alert() 대신 사용할 커스텀 모달 스타일 */
+        .custom-alert {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        .custom-alert-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            max-width: 90%;
+            width: 350px;
+        }
+        .custom-alert-btn {
+            margin-top: 20px;
+            padding: 10px 25px;
+            border: none;
+            background-color: #3498db;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
@@ -39,21 +71,21 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- 항목 1: 코크 -->
                 <div class="border border-gray-200 rounded-lg p-5 text-center transition-transform transform hover:scale-105 hover:shadow-lg">
-                    <img src="https://placehold.co/400x300/E2E8F0/4A5568?text=코크+청소" alt="코크 위생관리" class="w-full h-40 object-cover rounded-md mb-4">
+                    <img src="https://placehold.co/400x300/E2E8F0/4A5568?text=코크+청소" alt="코크 위생관리" class="w-full h-40 object-cover rounded-md mb-4" onerror="this.onerror=null;this.src='https://placehold.co/400x300/E2E8F0/4A5568?text=Image+Error';">
                     <h3 class="text-xl font-semibold text-gray-700">코크 위생 관리</h3>
                     <p class="text-gray-500 text-sm mt-2 mb-4">면봉이나 부드러운 천으로 코크 주변의 물때를 깨끗하게 닦아냅니다.</p>
                     <button data-step="코크" class="take-photo-btn w-full bg-blue-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-600 transition-colors">사진 촬영하기</button>
                 </div>
                 <!-- 항목 2: 물받이 -->
                 <div class="border border-gray-200 rounded-lg p-5 text-center transition-transform transform hover:scale-105 hover:shadow-lg">
-                    <img src="https://placehold.co/400x300/E2E8F0/4A5568?text=물받이+세척" alt="물받이 위생관리" class="w-full h-40 object-cover rounded-md mb-4">
+                    <img src="https://placehold.co/400x300/E2E8F0/4A5568?text=물받이+세척" alt="물받이 위생관리" class="w-full h-40 object-cover rounded-md mb-4" onerror="this.onerror=null;this.src='https://placehold.co/400x300/E2E8F0/4A5568?text=Image+Error';">
                     <h3 class="text-xl font-semibold text-gray-700">물받이 위생 관리</h3>
                     <p class="text-gray-500 text-sm mt-2 mb-4">물받이를 분리하여 중성세제로 세척한 후, 완전히 건조시켜 장착합니다.</p>
                     <button data-step="물받이" class="take-photo-btn w-full bg-blue-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-600 transition-colors">사진 촬영하기</button>
                 </div>
                 <!-- 항목 3: 외관 -->
                 <div class="border border-gray-200 rounded-lg p-5 text-center transition-transform transform hover:scale-105 hover:shadow-lg">
-                    <img src="https://placehold.co/400x300/E2E8F0/4A5568?text=외관+청결" alt="외관 위생관리" class="w-full h-40 object-cover rounded-md mb-4">
+                    <img src="https://placehold.co/400x300/E2E8F0/4A5568?text=외관+청결" alt="외관 위생관리" class="w-full h-40 object-cover rounded-md mb-4" onerror="this.onerror=null;this.src='https://placehold.co/400x300/E2E8F0/4A5568?text=Image+Error';">
                     <h3 class="text-xl font-semibold text-gray-700">제품 외관 관리</h3>
                     <p class="text-gray-500 text-sm mt-2 mb-4">부드러운 행주로 제품 외관에 묻은 먼지나 얼룩을 깨끗이 닦습니다.</p>
                     <button data-step="외관" class="take-photo-btn w-full bg-blue-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-600 transition-colors">사진 촬영하기</button>
@@ -85,6 +117,14 @@
             <div id="loader" class="loader"></div>
             <p id="status-message" class="text-white text-xl mt-4"></p>
         </div>
+        
+        <!-- 커스텀 Alert -->
+        <div id="custom-alert" class="custom-alert hidden">
+            <div class="custom-alert-content">
+                <p id="custom-alert-message"></p>
+                <button id="custom-alert-btn" class="custom-alert-btn">확인</button>
+            </div>
+        </div>
 
     </div>
 
@@ -109,9 +149,21 @@
         const retakeBtn = document.getElementById('retake-btn');
         const loader = document.getElementById('loader');
         const statusMessage = document.getElementById('status-message');
+        const customAlert = document.getElementById('custom-alert');
+        const customAlertMessage = document.getElementById('custom-alert-message');
+        const customAlertBtn = document.getElementById('custom-alert-btn');
 
         let currentStream;
         let currentStep = '';
+        
+        // 커스텀 alert 함수
+        function showAlert(message) {
+            customAlertMessage.textContent = message;
+            customAlert.classList.remove('hidden');
+        }
+        customAlertBtn.addEventListener('click', () => {
+            customAlert.classList.add('hidden');
+        });
 
         // "사진 촬영하기" 버튼 클릭 이벤트 (이벤트 위임 사용)
         guideSection.addEventListener('click', (e) => {
@@ -133,10 +185,10 @@
                     cameraSection.classList.remove('hidden');
                 } catch (error) {
                     console.error('카메라 접근 오류:', error);
-                    alert('카메라에 접근할 수 없습니다. 권한을 확인해주세요.');
+                    showAlert('카메라에 접근할 수 없습니다. 브라우저의 카메라 권한을 확인해주세요.');
                 }
             } else {
-                alert('이 브라우저에서는 카메라 기능을 지원하지 않습니다.');
+                showAlert('이 브라우저에서는 카메라 기능을 지원하지 않습니다.');
             }
         }
 
@@ -186,14 +238,10 @@
 
         // Google Sheet로 전송
         uploadBtn.addEventListener('click', async () => {
-            if (GOOGLE_APPS_SCRIPT_URL === 'https://script.google.com/a/macros/coway.com/s/AKfycbwgyPVgRazqhlABjnM4DvmBEID_ZaFKZRrGOs0Bwh2sOPv1RXgb1GqI8qOpDwNsv0pxZw/exec') {
-                alert('index.html 파일에서 GOOGLE_APPS_SCRIPT_URL 변수를 설정해야 합니다.');
-                return;
-            }
-
+            // === 문제가 되었던 if 블록을 여기서 삭제했습니다! ===
+            
             showStatus('Google Sheet로 전송 중...');
 
-            // Base64 데이터에서 헤더 부분 제거
             const base64ImageData = previewImg.src.split(',')[1];
             
             const payload = {
@@ -205,15 +253,17 @@
             try {
                 const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // Google Apps Script Web App은 no-cors 모드로 호출해야 할 수 있습니다.
+                    // mode: 'no-cors'를 사용하면 실제 성공/실패 여부를 알 수 없으므로 삭제합니다.
+                    // Google Apps Script에서 CORS를 처리하도록 수정해야 합니다. (별도 안내)
+                    // 지금은 우선 작동을 위해 cors 모드로 테스트합니다.
                     cache: 'no-cache',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(payload),
+                    redirect: 'follow'
                 });
                 
-                // no-cors 모드에서는 응답을 직접 읽을 수 없으므로 성공으로 간주
                 showStatus('전송 완료!', false);
                 setTimeout(() => {
                     hideStatus();
@@ -230,3 +280,4 @@
     </script>
 </body>
 </html>
+
